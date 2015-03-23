@@ -90,7 +90,7 @@ namespace NzbDrone.Core.Notifications.Synology
 
         private string Escape(string arg)
         {
-            return arg.Replace("\\", "\\\\").Replace(" ", "\\ ").Replace("\"", "\\\"");
+            return string.Format("\"{0}\"", arg.Replace("\"", "\\\""));
         }
     }
 }
