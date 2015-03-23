@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using NLog;
 using NzbDrone.Common.Processes;
 
@@ -17,6 +18,8 @@ namespace NzbDrone.Core.Notifications.Synology
 
     public class SynologyIndexerProxy : ISynologyIndexerProxy
     {
+        private const string SynoIndexPath = "/usr/syno/bin/synoindex";
+
         private readonly IProcessProvider _processProvider;
         private readonly Logger _logger;
 
@@ -30,12 +33,12 @@ namespace NzbDrone.Core.Notifications.Synology
         {
             try
             {
-                ExecuteCommand("--help");
+                ExecuteCommand("--help", false);
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.DebugException("synoindex not available", ex);
+                _logger.WarnException("synoindex not available", ex);
                 return false;
             }
         }
@@ -70,11 +73,11 @@ namespace NzbDrone.Core.Notifications.Synology
             ExecuteCommand("-R video");
         }
 
-        private void ExecuteCommand(string args)
+        private void ExecuteCommand(string args, bool throwOnStdOut = true)
         {
-            var output = _processProvider.StartAndCapture("/usr/syno/bin/synoindex", args);
+            var output = _processProvider.StartAndCapture(SynoIndexPath, args);
 
-            if (output.Standard.Count != 0)
+            if (output.Standard.Count != 0 && throwOnStdOut)
             {
                 throw new SynologyException("synoindex returned an error: {0}", string.Join("\n", output.Standard));
             }

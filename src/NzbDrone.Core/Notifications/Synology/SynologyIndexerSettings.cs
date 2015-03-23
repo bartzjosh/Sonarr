@@ -21,7 +21,7 @@ namespace NzbDrone.Core.Notifications.Synology
 
         public SynologyIndexerSettings()
         {
-
+            UpdateLibrary = true;
         }
 
         [FieldDefinition(0, Label = "Update Library", Type = FieldType.Checkbox, HelpText = "Call synoindex on localhost to update a library file")]
